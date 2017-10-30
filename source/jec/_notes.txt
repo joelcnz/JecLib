@@ -1,0 +1,3 @@
+JEXTLIB/source/jext/_notes.txt
+
+Left mouse button/or enter `l,` - copy text
