@@ -5,7 +5,7 @@ import jec.base;
 int setup() {
 	foreach(tkey; Keyboard.Key.A .. Keyboard.Key.KeyCount)
 		g_keys ~= new TKey(cast(Keyboard.Key)tkey);
-// deprecated from now on (30 7 2017)
+// (as follows) deprecated from now on (30 7 2017)
 	foreach(k; Keyboard.Key.A .. Keyboard.Key.Z + 1)
 		lkeys ~= new TKey(cast(Keyboard.Key)k); //#why do I need the cast!?
 

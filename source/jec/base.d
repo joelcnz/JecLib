@@ -1,8 +1,10 @@
+//#new
+//# need to add like sleep(50.dur!msecs);, not that it stops the tight loop!
 //jexa>>
 //misc>>
 module jec.base;
 
-//#Auto repeat not working
+//#Auto repeat not working ?
 public {
 	import dsfml.graphics;
 	import dsfml.audio;
@@ -10,7 +12,9 @@ public {
 }
 
 import std.stdio;
-import std.datetime;
+import std.datetime: Duration;
+import std.datetime.stopwatch: StopWatch;
+
 public import jec.base, jec.input, jec.jexting, jec.setup, jec.sound, jmisc;
 
 enum ErrorType {notLoad = -1, alright = 0}
@@ -38,7 +42,7 @@ Vector2f makeSquare(T : Vector2f)(T a) {
 /**
  * Handle keys, one hit buttons
  */
-//#Auto repeat not working
+//#Auto repeat not working ?
 class TKey {
 	enum KeyState {up, down, startGap, smallGap}
 	KeyState _keyState;
@@ -55,6 +59,10 @@ class TKey {
 		tKey = tkey0;
 		_keyDown = false;
 		_keyState = KeyState.up;
+	}
+
+	bool keyPressed() {
+		return Keyboard.isKeyPressed(tKey) != 0;
 	}
 
 	bool keyTrigger() {
@@ -85,13 +93,13 @@ class TKey {
 			return true;
 		}
 		
-		if (_keyState == KeyState.down && _stopWatchStart.peek.msecs > _startPause)  {
+		if (_keyState == KeyState.down && _stopWatchStart.peek.total!"msecs" > _startPause)  {
 			_keyState = KeyState.smallGap;
 			_stopWatchPause.reset;
 			_stopWatchPause.start;
 		}
 		
-		if (_keyState == KeyState.smallGap && _stopWatchPause.peek.msecs > _pauseTime) {
+		if (_keyState == KeyState.smallGap && _stopWatchPause.peek.total!"msecs" > _pauseTime) {
 			_keyState = KeyState.down;
 			
 			return true;
@@ -120,14 +128,15 @@ TKey[] ekeys;
 TKey kup, kright, kdown, kleft;
 
 auto trim(in string str) {
-	if (str.length > 2 && str[0 .. 2] == "./")
+	if (str.length > 6 && str[0 .. 2] == "./")
 		return str[2 .. $ - 4].dup;
 	else
 		return str.dup;
 }
 
-void keyHold(Keyboard.Key key) {
-	while(Keyboard.isKeyPressed(key)) {} // eg. keyHold(Keyboard.Key.Num2);
+void keyHold(int key) {
+	while(Keyboard.isKeyPressed(cast(Keyboard.Key)key)) { } //# need to add like sleep(50.dur!msecs);, not that it stops the tight loop!
+	//while(Keyboard.isKeyPressed(cast(Keyboard.Key)key)) { sleep(50.dur!msecs); } // eg. keyHold(Keyboard.Key.Num0 + i);
 }
 
 bool g_terminal;
@@ -191,6 +200,13 @@ import std.math;
 auto distance(T)(PointVec!(2, T) a, PointVec!(2, T) b) {
     auto deltaX = a.X - b.X;
     auto deltaY = a.Y - b.Y;
+
+	return sqrt((deltaX * deltaX) + (deltaY * deltaY));
+}
+
+auto distance(T,T2,T3,T4)(T x, T2 y, T3 x2, T4 y2) {
+    auto deltaX = x - x2;
+    auto deltaY = y - y2;
 
 	return sqrt((deltaX * deltaX) + (deltaY * deltaY));
 }
