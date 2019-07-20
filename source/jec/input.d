@@ -55,12 +55,17 @@ private:
 	JSound[char] _aphaNum;
 
 	bool _backSpaceHit;
+
+	bool _drawCursor = true;
 public:
 	@property {
 		/+
 		auto () { return _; }
 		void () { _ = 0; }
 		+/
+
+		auto drawCursor() { return _drawCursor; }
+		void drawCursor(bool drawCursor0) { _drawCursor = drawCursor0; }
 
 		auto lastKeyPressed() { return _lastKeyPressed; }
 		void lastKeyPressed(dchar lastKeyPressed0) { _lastKeyPressed = lastKeyPressed0; }
@@ -131,7 +136,7 @@ public:
 	}
 
 	this(Vector2f pos, int fontSize, string header = "H for help: ", InputType inputType = InputType.oneLine) {
-		gh("start of 'this' " ~ __FUNCTION__);
+		//gh("start of 'this' " ~ __FUNCTION__);
 		_colour = Color(255, 255, 255);
 		_header = new Text(header.to!dstring, g_font, fontSize);
 		_header.position = pos;
@@ -151,7 +156,7 @@ public:
 		//_x = _txt.position.x;
 		_measure = new Text(""d, g_font, fontSize);
 		_measure.position = pos;
-		debug mixin(trace("pos"));
+		//debug mixin(trace("pos"));
 	}
 
 	void updateMeasure() {
@@ -245,6 +250,13 @@ public:
 		return ""d;
 	} // get key dstring
 
+	void clearInput() {
+		_str = ""d;
+		_x = 0;
+		updateMeasure;
+		_txt.setString = _str;
+	}
+
 	void process() {
 		auto dkey = getKeyDString;
 		if (dkey.length)
@@ -257,8 +269,7 @@ public:
 		if (kBackSpace.keyInput && _str.length > 0) {
 			if (_x > 0) {
 				if (_control) {
-					_str = ""d;
-					_x = 0;
+					clearInput;
 				} else {
 					_str = _str[0 .. _x - 1] ~ _str[_x .. $];
 					if (_x > 0)
@@ -336,7 +347,7 @@ public:
 					_mousePos.y >= button.position.y
 					&&
 					_mousePos.y < button.position.y + button.getGlobalBounds.height) {
-						_button = button.getString;
+						_button = button.getString.to!string;
 						debug(5) mixin(trace("/* button: */ _button"));
 					}
 			}
@@ -347,7 +358,7 @@ public:
 		_cursor.size = Vector2f(2, _header.getCharacterSize);
 	} // process
 	
-	void addToHistory(T...)(T args) {
+	auto addToHistory(T...)(T args) {
 		import std.typecons: tuple;
 		import std.conv: text;
 
@@ -369,6 +380,8 @@ public:
 			
 			_inputHistoryPos = cast(int)_inputHistory.length - 1;
 		} // onlyMirror
+
+		return str;
 	}
 	
 	void draw() {
@@ -414,7 +427,8 @@ public:
 			g_window.draw(_header);
 			g_window.draw(_txt);
 			
-			g_window.draw(_cursor);
+			if (drawCursor)
+				g_window.draw(_cursor);
 		}
 	}
 }

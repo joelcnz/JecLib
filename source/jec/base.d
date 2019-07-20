@@ -9,17 +9,29 @@ public {
 	import dsfml.graphics;
 	import dsfml.audio;
 	import dsfml.window;
+
+	import std.math, std.conv, std.path;
 }
 
 import std.stdio;
 import std.datetime: Duration;
 import std.datetime.stopwatch: StopWatch;
 
-public import jec.base, jec.input, jec.jexting, jec.setup, jec.sound, jmisc;
+public import jec.base, jec.input, jec.jexting, jec.setup, jec.sound, jmisc, jec.gui, jec.guifile, jec.guiconfirm;
+//public import jec, jmisc;
 
 enum ErrorType {notLoad = -1, alright = 0}
+enum WedgetNum {projects, save, load, rename, del, current}
+enum WedgetConfirm {question, no, yes}
+enum FileAction {save, load, rename, del, nothing}
 
 RenderWindow g_window;
+GuiFile g_guiFile;
+GuiConfirm g_guiConfirm;
+dstring g_currentProjectName;
+RectangleShape g_progBarFill;
+
+dstring g_fileRootName;
 
 //#made template instead of normal functions
 float makeSquare(float a) {
@@ -151,6 +163,8 @@ alias jx = g_inputJex;
 
 enum Mode {play, edit}
 Mode g_mode = Mode.play;
+enum Focus {off, on}
+//enum EnterPressed {no, yes}
 
 immutable int g_spriteSize;
 
@@ -195,21 +209,6 @@ ubyte chr( int c ) {
 //jexa<<
 
 debug = TDD; //#hack
-
-import std.math;
-auto distance(T)(PointVec!(2, T) a, PointVec!(2, T) b) {
-    auto deltaX = a.X - b.X;
-    auto deltaY = a.Y - b.Y;
-
-	return sqrt((deltaX * deltaX) + (deltaY * deltaY));
-}
-
-auto distance(T,T2,T3,T4)(T x, T2 y, T3 x2, T4 y2) {
-    auto deltaX = x - x2;
-    auto deltaY = y - y2;
-
-	return sqrt((deltaX * deltaX) + (deltaY * deltaY));
-}
 
 enum aliceblue = Color(240, 248, 255);
 enum antiquewhite = Color(250, 235, 215);
@@ -347,7 +346,7 @@ enum slategrey = Color(112, 128, 144);
 enum snow = Color(255, 250, 250);
 enum springgreen = Color(0, 255, 127);
 enum steelblue = Color(70, 130, 180);
-enum tan = Color(210, 180, 140);
+enum ctan = Color(210, 180, 140);
 enum teal = Color(0, 128, 128);
 enum thistle = Color(216, 191, 216);
 enum tomato = Color(255, 99, 71);

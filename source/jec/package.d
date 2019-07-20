@@ -7,4 +7,8 @@ public import
 	jec.letter,
 	jec.lettermanager,
 	jec.setup,
-	jec.sound;
+	jec.sound,
+	jec.draw,
+	jec.trig,
+	jec.guifile,
+	jec.guiconfirm;
