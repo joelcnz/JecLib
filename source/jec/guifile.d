@@ -2,13 +2,19 @@ module jec.guifile;
 
 import jec.base;
 
+/**
+ * Handles file operations
+ * load, save, delete, and rename
+*/
 struct GuiFile {
+    /// list of boxes for each operation
     Wedget[] _wedgets;
 
     ref auto getWedgets() {
         return _wedgets;
     }
 
+    /// Set up
     void setup(Wedget[] wedgets) {
         _wedgets = wedgets;
     }
@@ -59,7 +65,7 @@ struct GuiFile {
                     case "rename":
                         set;
                         import std.file, std.path, std.string;
-                        g_guiConfirm.connect(["Rename '" ~ g_currentProjectName.stripExtension.baseName.to!string ~ "'",
+                        g_guiConfirm.connect(["Rename '" ~ g_currentProjectName.trim.stripExtension.baseName.to!string ~ "'",
                             "to: '" ~ g_fileRootName.to!string ~ "'", "project: Yes or No"], WedgetNum.rename);
                     break;
                     case "delete":

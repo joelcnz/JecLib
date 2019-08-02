@@ -127,7 +127,7 @@ class Button : Wedget {
             }
             _list = [txt0.to!string];
             setCharacterSize = 15;
-            setColor = yellow;
+            setColor = Colour.yellow;
             setFont = _font;
             position = Vector2f(box.left + 1, box.top + 1);
         }
