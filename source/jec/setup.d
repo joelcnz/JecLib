@@ -15,8 +15,8 @@ int setup() {
 		new EditBox("delete", Rect!float(20,500 - take,300,20), "Delete name: "),
 		new Wedget("current", Rect!float(20,525 - take,300,20))
 		]);
-	g_guiFile.getWedgets[WedgetNum.projects].focusAble = false;
-	g_guiFile.getWedgets[WedgetNum.current].focusAble = false;
+	g_guiFile.getWedgets[WedgetFile.projects].focusAble = false;
+	g_guiFile.getWedgets[WedgetFile.current].focusAble = false;
 	
 	int xpos = 320;
 	g_guiConfirm.setup([

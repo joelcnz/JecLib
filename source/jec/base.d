@@ -21,13 +21,15 @@ public import jec.base, jec.input, jec.jexting, jec.setup, jec.sound, jmisc, jec
 //public import jec, jmisc;
 
 enum ErrorType {notLoad = -1, alright = 0}
-enum WedgetNum {projects, save, load, rename, del, current}
 enum WedgetConfirm {question, no, yes}
-enum FileAction {save, load, rename, del, nothing}
+enum StateConfirm {ask, no, yes}
+enum WedgetFile {projects, save, load, rename, del, current}
 
 RenderWindow g_window;
 GuiFile g_guiFile;
 GuiConfirm g_guiConfirm;
+WedgetFile g_wedgetFile;
+StateConfirm g_stateConfirm;
 RectangleShape g_progBarFill;
 dstring g_currentProjectName;
 dstring g_fileRootName;
@@ -76,11 +78,11 @@ class TKey {
 		_keyState = KeyState.up;
 	}
 
-	bool keyPressed() {
+	bool keyPressed() { // eg. g_keys[Keyboard.Key.A].keyPressed
 		return Keyboard.isKeyPressed(tKey) != 0;
 	}
 
-	bool keyTrigger() {
+	bool keyTrigger() { // eg. g_keys[Keyboard.Key.A].keyTrigger
 		if (Keyboard.isKeyPressed(tKey) && _keyDown == false) {
 			_keyDown = true;
 			return true;

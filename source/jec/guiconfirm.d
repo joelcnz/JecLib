@@ -4,7 +4,6 @@ import jec.base;
 
 struct GuiConfirm {
     Wedget[] _wedgets;
-    WedgetNum _fun;
 
     ref auto getWedgets() {
         return _wedgets;
@@ -20,12 +19,11 @@ struct GuiConfirm {
         _wedgets.each!(w => w.hidden = state);
     }
 
-    void connect(string[] headerLines, WedgetNum fun) {
+    void setQuestion(string[] headerLines) {
         _wedgets[WedgetConfirm.question].list(headerLines);
-        _fun = fun;
     }
 
-    FileAction process(in Point pos) {
+    void process(in Point pos) {
         foreach(ref wedget; _wedgets) with(wedget) {
             process;
             if (gotFocus(pos)) {
@@ -33,19 +31,14 @@ struct GuiConfirm {
                 if (g_keys[Keyboard.Key.V].keyInput) {
                     setHideAll(true);
                     if (wedget.name == "yes")
-                        switch(_fun) with(WedgetNum) {
-                            default: break;
-                            case save: return FileAction.save;
-                            case load: return FileAction.load;
-                            case del: return FileAction.del;
-                            case rename: return FileAction.rename;
-                        }
+                        g_stateConfirm = StateConfirm.yes;
+                    else if (wedget.name == "no")
+                        g_stateConfirm = StateConfirm.no;
                 }
             } else {
                 _focus = Focus.off;
             }
         }
-        return FileAction.nothing;
     }
 
     void draw() {

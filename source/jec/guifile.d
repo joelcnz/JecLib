@@ -39,7 +39,7 @@ struct GuiFile {
                     import std.string;
                     
                     auto i = input.textStr.to!size_t;
-                    auto txts = g_guiFile.getWedgets[WedgetNum.projects].list;
+                    auto txts = g_guiFile.getWedgets[WedgetFile.projects].list;
 
                     if (i == 0 || i >= txts.length) {
                         //update(i, ", is out of bounds 1-", txts.length - 1);
@@ -48,29 +48,29 @@ struct GuiFile {
                     input.textStr = txts[i][txts[i].indexOf(" ") + 1 .. $].to!dstring;
                 }
                 import std.path;
-                void set() {
-                    g_guiConfirm.setHideAll(false);
+                if (name == "save" || name == "load" || name == "rename" || name == "delete") {
+                    g_guiConfirm.setHideAll(false); // show
                     g_fileRootName = input.textStr;
                 }
                 switch(name) {
                     default: break;
                     case "save":
-                        set;
-                        g_guiConfirm.connect(["Save '" ~ g_fileRootName.to!string ~ "'", "", "project: Yes or No?"], WedgetNum.save);
+                        g_guiConfirm.setQuestion(["Save '" ~ g_fileRootName.to!string ~ "'", "", "project: Yes or No?"]);
+                        g_wedgetFile = WedgetFile.save;
                     break;
                     case "load":
-                        set;
-                        g_guiConfirm.connect(["Load '" ~ g_fileRootName.to!string ~ "'", "", "project: Yes or No?"], WedgetNum.load);
+                        g_guiConfirm.setQuestion(["Load '" ~ g_fileRootName.to!string ~ "'", "", "project: Yes or No?"]);
+                        g_wedgetFile = WedgetFile.load;
                     break;
                     case "rename":
-                        set;
-                        import std.file, std.path, std.string;
-                        g_guiConfirm.connect(["Rename '" ~ g_currentProjectName.trim.stripExtension.baseName.to!string ~ "'",
-                            "to: '" ~ g_fileRootName.to!string ~ "'", "project: Yes or No"], WedgetNum.rename);
+                        import std.file, std.string;
+                        g_guiConfirm.setQuestion(["Rename '" ~ g_currentProjectName.trim.stripExtension.baseName.to!string ~ "'",
+                            "to: '" ~ g_fileRootName.to!string ~ "'", "project: Yes or No"]);
+                        g_wedgetFile = WedgetFile.rename;
                     break;
                     case "delete":
-                        set;
-                        g_guiConfirm.connect(["Delete '" ~ g_fileRootName.to!string ~ "'", "", "project: Yes or No?"], WedgetNum.del);
+                        g_guiConfirm.setQuestion(["Delete '" ~ g_fileRootName.to!string ~ "'", "", "project: Yes or No?"]);
+                        g_wedgetFile = WedgetFile.del;
                     break;
                 }
                 input.clearInput;
