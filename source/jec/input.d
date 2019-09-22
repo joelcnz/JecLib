@@ -184,46 +184,62 @@ public:
 	dstring getKeyDString() {
 		_keyShift = _control = _alt = _keySystem = false;
 
-		if (Keyboard.isKeyPressed(Keyboard.Key.LShift) ||
-			Keyboard.isKeyPressed(Keyboard.Key.RShift))
+		//if (Keyboard.isKeyPressed(Keyboard.Key.LShift) ||
+		//	Keyboard.isKeyPressed(Keyboard.Key.RShift))
+		if (g_keyState[SDL_SCANCODE_LSHIFT] ||
+			g_keyState[SDL_SCANCODE_RSHIFT]) {
 			_keyShift = true;
+		}
 
-		if (Keyboard.isKeyPressed(Keyboard.Key.LControl) ||
-			Keyboard.isKeyPressed(Keyboard.Key.RControl)) {
+		//if (Keyboard.isKeyPressed(Keyboard.Key.LControl) ||
+		//	Keyboard.isKeyPressed(Keyboard.Key.RControl)) {
+		if (g_keyState[SDL_SCANCODE_LCTRL] ||
+			g_keyState[SDL_SCANCODE_RCTRL]) {
 			_control = true;
 		}
-		if (Keyboard.isKeyPressed(Keyboard.Key.LAlt) ||
-			Keyboard.isKeyPressed(Keyboard.Key.RAlt)) {
+		//if (Keyboard.isKeyPressed(Keyboard.Key.LAlt) ||
+		//	Keyboard.isKeyPressed(Keyboard.Key.RAlt)) {
+		if (g_keyState[SDL_SCANCODE_LALT] ||
+			g_keyState[SDL_SCANCODE_RALT]) {
 			_alt = true;
 		}
 
-		if (Keyboard.isKeyPressed(Keyboard.Key.LSystem) ||
-			Keyboard.isKeyPressed(Keyboard.Key.RSystem)) {
+		//if (Keyboard.isKeyPressed(Keyboard.Key.LSystem) ||
+		//	Keyboard.isKeyPressed(Keyboard.Key.RSystem)) {
+		if (g_keyState[SDL_SCANCODE_LGUI] ||
+			g_keyState[SDL_SCANCODE_RGUI]) {
 			_keySystem = true;
 		}
 
 		int i = 0;
-		foreach(key; Keyboard.Key.A .. Keyboard.Key.Z + 1) {
-			if (lkeys[i].keyInput) {
+		foreach(key; SDL_SCANCODE_A .. SDL_SCANCODE_Z + 1) {
+			if (g_keys[cast(ubyte)key].keyInput) {
 				if (_keyShift == true)
 					return uppercase[i].to!dstring;
 				else
 					return lowercase[i].to!dstring;
 			}
-			i++;
+			i += 1;
 		} // foreach
 
+		if (g_keys[SDL_SCANCODE_Z + 10].keyInput) {
+			if (_keyShift)
+				return ")"d;
+			else
+				return "0"d;
+		}
 		i = 0;
-		foreach(key; Keyboard.Key.Num0 .. Keyboard.Key.Num9 + 1) {
-			if (nkeys[i].keyInput) {
+		foreach(key; SDL_SCANCODE_Z + 1 .. SDL_SCANCODE_Z + 9 + 1) {
+			if (g_keys[key].keyInput) {
 				if (_keyShift)
-					return ")!@#$%^&*("d[key - Keyboard.Key.Num0].to!dstring;
+					return "!@#$%^&*("d[i].to!dstring;
 				else
-					return i.to!dstring;
+					return (i + 1).to!dstring;
 			}
 			i++;
 		} // foreach
 
+/+
 		i = 0;
 		foreach(key; Keyboard.Key.LBracket .. Keyboard.Key.Dash + 1) {
 			if (! _control && ! _alt) {
@@ -243,10 +259,10 @@ public:
 			}
 			i++;
 		} // foreach
++/
 
-		if (kSpace.keyInput)
+		if (g_keys[SDL_SCANCODE_SPACE].keyInput)
 			return " "d;
-		
 		return ""d;
 	} // get key dstring
 
@@ -259,6 +275,7 @@ public:
 
 	void process() {
 		auto dkey = getKeyDString;
+
 		if (dkey.length)
 			_lastKeyPressed = dkey[0];
 		if (dkey != ""d)
@@ -266,7 +283,7 @@ public:
 			_txt.setString = _str,
 			updateMeasure;
 
-		if (kBackSpace.keyInput && _str.length > 0) {
+		if (g_keys[SDL_SCANCODE_BACKSPACE].keyInput && _str.length > 0) {
 			if (_x > 0) {
 				if (_control) {
 					clearInput;
@@ -281,7 +298,7 @@ public:
 			}
 		}
 		
-		if (kReturn.keyInput) {
+		if (g_keys[SDL_SCANCODE_RETURN].keyInput) {
 			if (inputType == InputType.history) {
 				addToHistory(_str);
 				_inputHistory ~= _str;
@@ -293,7 +310,7 @@ public:
 		}
 
 		//#up key press
-		if (kup.keyInput) {
+		if (g_keys[SDL_SCANCODE_UP].keyInput) {
 			if (_inputHistory.length && _inputHistoryPos > 0) {
 				--_inputHistoryPos;
 				debug(5) mixin(trace("/* key up */ _inputHistoryPos"));
@@ -303,7 +320,7 @@ public:
 			}
 		}
 
-		if (kdown.keyInput) {
+		if (g_keys[SDL_SCANCODE_DOWN].keyInput) {
 			if (_inputHistoryPos >= 0 && (_inputHistory.length > 0 && _inputHistoryPos < _inputHistory.length - 1)) {
 				++_inputHistoryPos;
 				debug(5) mixin(trace("/* key down */ _inputHistoryPos"));
@@ -314,7 +331,7 @@ public:
 		}
 		
 		//#under construction
-		if (kleft.keyInput && _x - 1 >= 0) {
+		if (g_keys[SDL_SCANCODE_LEFT].keyInput && _x - 1 >= 0) {
 			if (_x > _str.length) //#hack
 				_x = cast(int)_str.length;
 			else
@@ -323,7 +340,7 @@ public:
 			_measure.setString = _str[0 .. _x];
 		}
 
-		if (kright.keyInput && _x + 1 <= _str.length) {
+		if (g_keys[SDL_SCANCODE_RIGHT].keyInput && _x + 1 <= _str.length) {
 			if (_x >= _str.length) //#hack
 				_x = cast(int)_str.length;
 			else

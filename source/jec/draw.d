@@ -1,18 +1,21 @@
 module jec.draw;
 
+//#Colour changing not working
 import jec.base;
 
+/// Draw a single dot
 void jecDrawDot(ref Image img, Point pos, Color colour) {
     if (pos.X >=0 && pos.X < img.getSize.x &&
         pos.Y >= 0 && pos.Y < img.getSize.y)
         img.setPixel(cast(int)pos.X, cast(int)pos.Y, colour);
 }
 
+//#Colour changing not working
 /// fast draw modified for my purposes
 /// See: http://www.brackeen.com/vga/source/bc31/lines.c.html
 void jecDrawLine(ref Image img, Point pst, Point ped, Color cst, Color ced) {
     int i,dx,dy,sdx,sdy,dxabs,dyabs,x,y, px, py;
-    int x1 = pst.Xi, x2 = ped.Xi,
+    immutable x1 = pst.Xi, x2 = ped.Xi,
         y1 = pst.Yi, y2 = ped.Yi;
 
     dx=x2-x1;      /* the horizontal distance of the line */
@@ -30,12 +33,13 @@ void jecDrawLine(ref Image img, Point pst, Point ped, Color cst, Color ced) {
     int clen;
     int[] nums = [ced.r - cst.r, ced.g - cst.g, ced.b - cst.b];
 
-    import std.array;
-    import std.algorithm;
+    import std.array : array;
+    import std.algorithm : sort, map;
+    import std : abs;
 
     clen = nums.map!"abs(a)".array.sort!"a > b"[0];
     //trace!clen;
-    float r,g,b, dr,dg,db;
+    float r,g,b,dr,dg,db;
     float[] flts = [ped.X - pst.X, ped.Y - pst.Y];
     float llen;
     llen = flts.map!"abs(a)".array.sort!"a > b"[0];

@@ -30,17 +30,32 @@ private:
 	
 	LetterManager m_letterManager;
 public:
-	@property ref auto xpos() { return m_xpos; } /// x position
-	@property ref auto ypos() { return m_ypos; } /// y position
-	@property ref auto letter() { return m_letter; } /// letter
-	@property ref auto lock() { return m_lock; } /// lock state
-	@property ref auto alternate() { return m_alternate; } /// alterating colour on/off switch
-	@property ref auto altColour() { return m_altColour; } /// second colour for the alterating colour being on
-	@property ref auto letterManager() { return m_letterManager; } /// 
-	@property {
-		void selected(bool selected) { m_selected = selected; }
-		auto selected() { return m_selected; }
-	}
+	/// x position
+	ref auto xpos() { return m_xpos; }
+
+	/// y position
+	ref auto ypos() { return m_ypos; }
+
+	/// letter
+	ref auto letter() { return m_letter; }
+
+	/// lock state
+	ref auto lock() { return m_lock; }
+
+	/// alterating colour on/off switch
+	ref auto alternate() { return m_alternate; }
+
+	/// second colour for the alterating colour being on
+	ref auto altColour() { return m_altColour; }
+
+	/// Letter manager ?
+	ref auto letterManager() { return m_letterManager; }
+
+	/// Selected text setter
+	void selected(bool selected) { m_selected = selected; }
+
+	/// Selected text getter
+	auto selected() { return m_selected; }
 	
 	//void setPostion( double x, double y ) { xpos = x; ypos = y; } /// postion the letter
 	void setPostion( double x, double y ) {
@@ -100,7 +115,7 @@ public:
 			m_roof = -3, m_floor = 0;
 		} else {
 			m_yoff += m_ydir;
-			float tmp = m_ydir;
+			immutable tmp = m_ydir;
 			if ( m_yoff < m_roof )
 				m_ydir = 1;
 

@@ -19,6 +19,7 @@ struct GuiFile {
         _wedgets = wedgets;
     }
 
+    /// Process's
     void process(in Point pos) {
         for1: foreach(ref wedget; _wedgets) with(wedget) {
             process;
@@ -36,7 +37,7 @@ struct GuiFile {
                 if ("save load delete".split.canFind(name) &&
                     input.textStr.length &&
                     input.textStr[0].to!char.isDigit) {
-                    import std.string;
+                    import std.string : indexOf;
                     
                     auto i = input.textStr.to!size_t;
                     auto txts = g_guiFile.getWedgets[WedgetFile.projects].list;
@@ -47,7 +48,7 @@ struct GuiFile {
                     }
                     input.textStr = txts[i][txts[i].indexOf(" ") + 1 .. $].to!dstring;
                 }
-                import std.path;
+                import std.path : stripExtension, baseName;
                 if (name == "save" || name == "load" || name == "rename" || name == "delete") {
                     g_guiConfirm.setHideAll(false); // show
                     g_fileRootName = input.textStr;
@@ -55,21 +56,24 @@ struct GuiFile {
                 switch(name) {
                     default: break;
                     case "save":
-                        g_guiConfirm.setQuestion(["Save '" ~ g_fileRootName.to!string ~ "'", "", "project: Yes or No?"]);
+                        g_guiConfirm.setQuestion(["Save '" ~ g_fileRootName.to!string ~ "'", "",
+                            "project: Yes or No?"]);
                         g_wedgetFile = WedgetFile.save;
                     break;
                     case "load":
-                        g_guiConfirm.setQuestion(["Load '" ~ g_fileRootName.to!string ~ "'", "", "project: Yes or No?"]);
+                        g_guiConfirm.setQuestion(["Load '" ~ g_fileRootName.to!string ~ "'", "",
+                            "project: Yes or No?"]);
                         g_wedgetFile = WedgetFile.load;
                     break;
                     case "rename":
-                        import std.file, std.string;
-                        g_guiConfirm.setQuestion(["Rename '" ~ g_currentProjectName.trim.stripExtension.baseName.to!string ~ "'",
-                            "to: '" ~ g_fileRootName.to!string ~ "'", "project: Yes or No"]);
+                        g_guiConfirm.setQuestion(["Rename '" ~
+                            g_currentProjectName.trim.stripExtension.baseName.to!string ~ "'",
+                                "to: '" ~ g_fileRootName.to!string ~ "'", "project: Yes or No"]);
                         g_wedgetFile = WedgetFile.rename;
                     break;
                     case "delete":
-                        g_guiConfirm.setQuestion(["Delete '" ~ g_fileRootName.to!string ~ "'", "", "project: Yes or No?"]);
+                        g_guiConfirm.setQuestion(["Delete '" ~ g_fileRootName.to!string ~ "'",
+                            "", "project: Yes or No?"]);
                         g_wedgetFile = WedgetFile.del;
                     break;
                 }
@@ -78,9 +82,9 @@ struct GuiFile {
         }
     }
 
+    /// Draw each file wedget
     void draw() {
-        foreach(w; _wedgets) {
-            w.draw;
-        }
+        import std.algorithm : each;
+        _wedgets.each!(w => w.draw);
     }
 }

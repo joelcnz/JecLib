@@ -1,3 +1,4 @@
+//#should say pasteFromCopiedText
 //#DISPLAY_W )
 //#no draw here yet
 //#Ctrl + Delete to suck
@@ -34,7 +35,7 @@ import jec;
 version = AutoScroll;
 
 /// Letter Manager
-class LetterManager { //#shoudn't it be struct
+final class LetterManager { //#shoudn't it be struct
 private:
 	Sprite[char] m_bmpLetters;
 	RenderTexture _stampArea;
@@ -54,34 +55,58 @@ private:
 	RectangleShape _cursorGfx;
 	bool _textSelected;
 public:
+	/// Text type
 	enum TextType {block, line}
-	TextType m_textType;
-	@property ref auto letters() { return  m_letters; } /// get/set letters (Letter[])
+	TextType m_textType; /// Method text type
+	
+	/// get/set letters (Letter[])
+	ref auto letters() { return  m_letters; }
 	//@property ref auto area() { return m_area; } /// get/set bounds
-	@property ref auto square() { return m_square; } /// get/set square(x, y, w, h) (text box)
-	@property ref auto alternate() { return m_alternate; } /// get/set alternating colours on or off
-	@property auto count() { return cast(int)letters.length; } /// get number of letters (including white space)
-	@property ref auto pos() { return m_pos; } /// access cursor position
-	@property ref auto wait() { return m_wait; } /// access cursor position
+	
+	/// get/set square(x, y, w, h) (text box)
+	ref auto square() { return m_square; }
+	
+	/// get/set alternating colours on or off
+	ref auto alternate() { return m_alternate; }
+	
+	/// get number of letters (including white space)
+	auto count() { return cast(int)letters.length; } 
+	
+	/// access cursor position
+	ref auto pos() { return m_pos; }
+	
+	/// access cursor position
+	ref auto wait() { return m_wait; }
 	//@property ref auto copiedText() { return m_copiedText; } /// access copiedText (string) //#remed out
-	@property ref auto width() { return m_width; } /// letters width
-	@property ref auto height() { return m_height; } /// letters height
-	@property ref auto bmpLetters() { return m_bmpLetters; } /// letters height
-	@property void copiedText(string ctext0) { m_copiedText = ctext0; }
-	@property string copiedText() { return m_copiedText; }
-	@property {
-		void copySelectedText() {
-			import std.algorithm: each;
+	
+	/// letters width
+	ref auto width() { return m_width; }
+	
+	/// letters height
+	ref auto height() { return m_height; }
+	
+	/// letters height
+	ref auto bmpLetters() { return m_bmpLetters; }
+	
+	/// Copied text setter
+	void copiedText(string ctext0) { m_copiedText = ctext0; }
+	
+	/// Copied text getter
+	string copiedText() { return m_copiedText; }
 
-			m_copiedText.length = 0;
-			foreach(l; letters)
-				if (l.selected)
-					m_copiedText ~= l.letter;
-		}
+	/// copy selected text
+	void copySelectedText() {
+		import std.algorithm: each;
 
-		void pasteSelectedText() {
-			pasteInputText;
-		}
+		m_copiedText.length = 0;
+		foreach(l; letters)
+			if (l.selected)
+				m_copiedText ~= l.letter;
+	}
+
+	/// Paste copied text
+	void pasteSelectedText() { //#should say pasteFromCopiedText
+		pasteInputText;
 	}
 	
 	/// ctor, setting area
@@ -107,7 +132,7 @@ public:
 		with(asquare)
 			this.square = Square(xpos,ypos, width, height);
 	}
-	
+
 	/// copy letters to bmps
 	auto getLetters(Texture source, in string order, int step) {
 		Sprite[char] tletters;
@@ -159,7 +184,7 @@ public:
 		import std.typecons: tuple;
 		import std.conv: text;
 
-		auto str = text(tuple(args).expand);
+		immutable str = text(tuple(args).expand);
 		string result = getText() ~ str ~ "\n";
 		setText( result );
 
@@ -207,8 +232,8 @@ public:
 	
 	/// Postion text for display
 	void placeLetters() {
-		auto inword = false;
-		auto startWordIndex = -1;
+		//auto inword = false;
+		//auto startWordIndex = -1;
 		Color[] altcols = [Color(255, 180, 0), Color(255,0,0)];
 		auto altcolcyc = 0;
 		int x = 0, y = 0;
@@ -222,7 +247,7 @@ public:
 				if (let == g_lf) {
 					x = -width;
 				} else {
-					auto iwas = i;
+					immutable iwas = i;
 
 					int xi = x;
 					x = 0;
@@ -291,10 +316,12 @@ public:
 		return -1;
 	}
 
+	/// Lock letter
 	bool pLock( int a ) {
 		return letters[ a ].lock;
 	}
 
+	/// Copy input text
 	void copyInputText() {
 		if (count > 1) {
 			int lastLocked = searchForProperty( count() - 1, -1, -1, 
@@ -302,22 +329,21 @@ public:
 			);
 			
 			if (lastLocked != count) {
-				auto copy = getText()[ lastLocked + 1.. $ ];
-				copiedText = copy;
+				copiedText = getText()[ lastLocked + 1.. $ ];
 				//#setTextClipboard
 				//setTextClipboard( copy );
 			}
 		}
 	}
 	
+	/// Paste input text
 	void pasteInputText() {
-		int i = searchForProperty(
+		letters.length = searchForProperty(
 			/+ start: +/ count - 1,
 			/+ end: +/ -1,
 			/+ step: +/ -1,
 			/+ rule(s): +/ &pLock
-		);
-		letters.length = i + 1;
+		) + 1;
 		addText( copiedText );
 		pos = count - 1;
 	}
@@ -342,19 +368,19 @@ public:
 
 		void directionalMostly() {
 			if (jx.keySystem) {
-				if (g_keys[Keyboard.Key.C].keyTrigger) {
+				if (g_keys[SDL_SCANCODE_C].keyTrigger) {
 					//copyInputText();
 					copySelectedText;
 					g_doLetUpdate = true;
 				}
 
-				if (g_keys[Keyboard.Key.V].keyTrigger) {
+				if (g_keys[SDL_SCANCODE_V].keyTrigger) {
 					//pasteInputText();
 					pasteSelectedText;
 					g_doLetUpdate = true;
 				}
 
-				if (g_keys[Keyboard.Key.Up].keyInput) {
+				if (g_keys[SDL_SCANCODE_UP].keyInput) {
 					int i = pos;
 					for( i = pos; i > -1 && letters[ i ].lock == false; --i )
 					{}
@@ -363,7 +389,7 @@ public:
 					ifUnselect;
 				}
 
-				if (g_keys[Keyboard.Key.Down].keyInput) {
+				if (g_keys[SDL_SCANCODE_DOWN].keyInput) {
 					pos = count - 1;
 					g_doLetUpdate = true;
 					ifUnselect;
@@ -382,7 +408,7 @@ public:
 				}
 				*/
 
-				if (g_keys[Keyboard.Key.Left].keyInput && pos >= 0 ) {
+				if (g_keys[SDL_SCANCODE_LEFT].keyInput && pos >= 0 ) {
 					int i = pos;
 					for( ; i > 0 && letters[ i ].lock == false
 						&& cast(int)letters[ i ].xpos != 0; --i ) { }
@@ -391,7 +417,7 @@ public:
 					ifUnselect;
 				}
 				
-				if (g_keys[Keyboard.Key.Right].keyInput && pos < count - 1 ) {
+				if (g_keys[SDL_SCANCODE_RIGHT].keyInput && pos < count - 1 ) {
 					ifUnselect;
 					int hght = cast(int)letters[ pos > -1 ? pos + 1 : 1 ].ypos;
 					auto offTheEnd = true;
@@ -414,7 +440,7 @@ public:
 			} // system key
 				
 			if (jx.keyAlt) {
-				if (g_keys[Keyboard.Key.Left].keyInput) {
+				if (g_keys[SDL_SCANCODE_LEFT].keyInput) {
 					if ( pos > -1 && letters[ pos ].lock != true ) {
 						int i = 0;
 						for( i = pos - 1;
@@ -427,7 +453,7 @@ public:
 					g_doLetUpdate = true;
 					ifUnselect;
 				}
-				if (g_keys[Keyboard.Key.Right].keyInput) {
+				if (g_keys[SDL_SCANCODE_RIGHT].keyInput) {
 					int i = 0;
 					for( i = pos + 1;
 						i < letters.length &&
@@ -443,7 +469,7 @@ public:
 			} // alt key
 				
 			if (! jx.keyControl && ! jx.keyAlt && ! jx.keySystem) {
-				if (g_keys[Keyboard.Key.Left].keyInput && count > 0 ) {
+				if (g_keys[SDL_SCANCODE_LEFT].keyInput && count > 0 ) {
 					if ( pos - 1 > -2 )
 						--pos;
 					if ( letters[ pos + 1 ].lock == true )
@@ -452,7 +478,7 @@ public:
 					ifUnselect;
 				}
 
-				if (g_keys[Keyboard.Key.Right].keyInput) {
+				if (g_keys[SDL_SCANCODE_RIGHT].keyInput) {
 					++pos;
 					if ( pos >= letters.length  )
 						--pos;
@@ -460,7 +486,7 @@ public:
 					ifUnselect;
 				}
 				
-				if (g_keys[Keyboard.Key.Up].keyInput && count > 0 && pos != -1 ) {
+				if (g_keys[SDL_SCANCODE_UP].keyInput && count > 0 && pos != -1 ) {
 					int xpos = cast(int)letters[ pos ].xpos,
 						ypos = cast(int)letters[ pos ].ypos - height;
 					foreach_reverse(i, l; letters[0 .. pos]) {
@@ -475,13 +501,12 @@ public:
 					ifUnselect;
 				} // key up
 				
-				if (g_keys[Keyboard.Key.Down].keyInput && count > 0 && pos != -1 ) {
+				if (g_keys[SDL_SCANCODE_DOWN].keyInput && count > 0 && pos != -1 ) {
 					int xpos = cast(int)letters[ pos ].xpos,
 						ypos = cast(int)letters[ pos ].ypos + height;
-					int startPos = pos;
 					foreach(i, l; letters[pos .. $]) {
 						if (cast(int)l.xpos == xpos && cast(int)l.ypos == ypos) {
-							pos = startPos + cast(int)i;
+							pos = pos + cast(int)i;
 							break;
 						}
 					}
@@ -494,12 +519,11 @@ public:
 		directionalMostly();
 
 		if (jx.keySystem && ! jx.keyControl && ! jx.keyAlt) {
-			if (g_keys[Keyboard.Key.A].keyInput) {
+			if (g_keys[SDL_SCANCODE_A].keyInput) {
 				import std.algorithm: each;
 
 				letters.each!(l => l.selected = ! l.lock ? true : false);
 				g_doLetUpdate = true;
-				bool selectedText = false;
 				foreach(l; letters)
 					if (! l.lock) {
 						_textSelected = true;
@@ -525,7 +549,7 @@ public:
 			g_doLetUpdate = true;
 		}
 		
-		if (g_keys[Keyboard.Key.Return].keyInput) {
+		if (g_keys[SDL_SCANCODE_RETURN].keyInput) {
 			enterPressed = true;
 			final switch ( m_textType ) {
 				case TextType.block:
@@ -542,7 +566,7 @@ public:
 			g_doLetUpdate = true;
 		}
 		
-		if (! jx.keySystem && g_keys[Keyboard.Key.BackSpace].keyInput && pos > -1
+		if (! jx.keySystem && g_keys[SDL_SCANCODE_BACKSPACE].keyInput && pos > -1
 			&& letters[ pos ].lock == false) {
 			if (_textSelected) {
 				int i;
@@ -552,7 +576,6 @@ public:
 				//letters.length = i + 1;
 				//pos = i;
 
-				string text;
 				int st2 = -1, ed = -1;
 				foreach(i2, l; letters[i .. $]) {
 					if (l.selected && st2 == -1) {
@@ -611,7 +634,7 @@ public:
 	void draw() {
 		if (g_doLetUpdate) {
 			g_doLetUpdate = false;
-			_stampArea.clear(Color.Black);
+			_stampArea.clear(Colour.black);
 			if (count > 0)
 				foreach(l; letters)
 					l.draw(_stampArea, square);

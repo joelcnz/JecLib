@@ -2,20 +2,23 @@ module jec.guiconfirm;
 
 import jec.base;
 
+/// Confirm (yes/no) dialog box
 struct GuiConfirm {
-    Wedget[] _wedgets;
+    Wedget[] _wedgets; /// List of wedgets
 
     ref auto getWedgets() {
         return _wedgets;
     }
 
+    /// basic set up
     void setup(Wedget[] wedgets) {
         _wedgets = wedgets;
         setHideAll(true);
     }
 
     void setHideAll(bool state) {
-        import std.algorithm;
+        import std.algorithm : each;
+
         _wedgets.each!(w => w.hidden = state);
     }
 
@@ -23,6 +26,7 @@ struct GuiConfirm {
         _wedgets[WedgetConfirm.question].list(headerLines);
     }
 
+    /// Process checking for button press
     void process(in Point pos) {
         foreach(ref wedget; _wedgets) with(wedget) {
             process;
@@ -41,6 +45,7 @@ struct GuiConfirm {
         }
     }
 
+    /// Draw
     void draw() {
         foreach(w; _wedgets) {
             if (! w.hidden)

@@ -2,16 +2,18 @@ module jec.trig;
 
 import jec.base;
 
+/// From point
 void fromPoint(ref float magnitude, ref float direction, float[2] point) {
-    float x = point[0],
+    immutable x = point[0],
         y = point[1];
     magnitude = sqrt(x ^^ 2 + y ^^ 2);
     direction  = atan2(y, x);
 }
 
+/// To point
 float[2] toPoint(in float direction, in float magnitude) {
-    float x = cos(direction) * magnitude;
-    float y = sin(direction) * magnitude;
+    immutable x = cos(direction) * magnitude;
+    immutable y = sin(direction) * magnitude;
 
     return [x, y];
 }
@@ -21,7 +23,8 @@ float getAngle( float x, float y, float tx, float ty )
   return correct( atan2( ty - y, tx - x ) );
 }
 
-alias getAngle aim;
+/// aim is the same as getAngle
+alias aim = getAngle;
 
 /*
 void Project( double old_x, double old_y, double angle, double* new_x, double* new_y )
@@ -75,14 +78,16 @@ int isRight( double a, double ta, double scope ) {
 //double abs( double v ) { return v<0 ? v*-1 : v; }
 
 // 4
+/// Quick distance
 double quickDistance( double x,double y, double tx,double ty )
 {
   return abs( x - tx ) + abs( y - ty );
 }
 
 // 7m
+/// Keep within PI * 2
 double correct( double angle ) {
-  static double a=
+  immutable a=
 //         2*PIE
           PI*2
   ;
@@ -140,25 +145,31 @@ void Cov2( double ox, double oy, double ang, double *cx, double *cy ) {
 
 // xyaim( &,&, aim( ) );
 
+/// Aim for x and y
 void xyaim( float* dx, float* dy, float ang )
 {
   (*dx)=cos(ang);
   (*dy)=sin(ang);
 }
 
+/// Aim and move x and y
 void aMove( double* mx,double* my, double stp, double ang ) {
   (*mx)+=stp*cos(ang);
   (*my)+=stp*sin(ang);
 }
 
+
+/// Aim and move just x
 void aMovex( double *mx, double stp, double ang ) {
   (*mx)+=stp*cos(ang);
 }
 
+/// Aim and move just y
 void aMovey( double *my, double stp, double ang ) {
   (*my)+=stp*sin(ang);
 }
 
+/// Get distance template
 auto distance(T)(PointVec!(2, T) a, PointVec!(2, T) b) {
     auto deltaX = a.X - b.X;
     auto deltaY = a.Y - b.Y;
@@ -166,6 +177,7 @@ auto distance(T)(PointVec!(2, T) a, PointVec!(2, T) b) {
 	return sqrt((deltaX * deltaX) + (deltaY * deltaY));
 }
 
+/// Get distance template without using Point
 auto distance(T,T2,T3,T4)(T x, T2 y, T3 x2, T4 y2) {
     auto deltaX = x - x2;
     auto deltaY = y - y2;

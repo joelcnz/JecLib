@@ -3,8 +3,21 @@ module jec.setup;
 import jec.base;
 
 int setup() {
-	foreach(tkey; Keyboard.Key.A .. Keyboard.Key.KeyCount)
-		g_keys ~= new TKey(cast(Keyboard.Key)tkey);
+	// Load the SDL 2 library.
+    DerelictSDL2.load();
+
+    // Now SDL 2 functions for all of the SDL2 libraries can be called.
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) != 0) {
+		import std.stdio;
+        writeln("SDL init failed!");
+        return 1;
+    }
+
+    g_keyState = SDL_GetKeyboardState(null);
+
+	//foreach(tkey; Keyboard.Key.A .. Keyboard.Key.KeyCount)
+	foreach(tkey; 0 .. SDL_NUM_SCANCODES)
+		g_keys ~= new TKey(cast(ubyte)tkey);
 
 	float take = 100;
 	g_guiFile.setup([
@@ -27,6 +40,7 @@ int setup() {
 	g_guiConfirm.getWedgets[WedgetConfirm.question].focusAble = false;
 
 // (as follows) deprecated from now on (30 7 2017)
+/+
 	foreach(k; Keyboard.Key.A .. Keyboard.Key.Z + 1)
 		lkeys ~= new TKey(cast(Keyboard.Key)k); //#why do I need the cast!?
 
@@ -44,6 +58,6 @@ int setup() {
 	kright = new TKey(Keyboard.Key.Right);
 	kdown = new TKey(Keyboard.Key.Down);
 	kleft = new TKey(Keyboard.Key.Left);
-	
++/	
 	return 0;
 }
