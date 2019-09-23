@@ -368,6 +368,18 @@ public:
 
 		void directionalMostly() {
 			if (jx.keySystem) {
+				if (g_keys[SDL_SCANCODE_A].keyTrigger) {
+					import std.algorithm: each;
+
+					letters.each!(l => l.selected = ! l.lock ? true : false);
+					g_doLetUpdate = true;
+					foreach(l; letters)
+						if (! l.lock) {
+							_textSelected = true;
+							break;
+						}
+				}
+
 				if (g_keys[SDL_SCANCODE_C].keyTrigger) {
 					//copyInputText();
 					copySelectedText;
@@ -517,9 +529,10 @@ public:
 			
 		}
 		directionalMostly();
-
+/+
 		if (jx.keySystem && ! jx.keyControl && ! jx.keyAlt) {
 			if (g_keys[SDL_SCANCODE_A].keyInput) {
+				"command+A".gh;
 				import std.algorithm: each;
 
 				letters.each!(l => l.selected = ! l.lock ? true : false);
@@ -531,7 +544,7 @@ public:
 					}
 			}
 		} // system key 2
-
++/
 		auto doPut = false;
 		
 		//#character adder

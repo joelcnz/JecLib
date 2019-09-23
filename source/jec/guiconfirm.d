@@ -1,5 +1,7 @@
 module jec.guiconfirm;
 
+//#couldn't get mouse button to work! Grr..
+
 import jec.base;
 
 /// Confirm (yes/no) dialog box
@@ -32,7 +34,12 @@ struct GuiConfirm {
             process;
             if (gotFocus(pos)) {
                 _focus = Focus.on;
-                if (g_keys[Keyboard.Key.V].keyInput) {
+                //int x,y;
+
+                //SDL_MOUSEBUTTONDOWN
+                //#couldn't get mouse button to work! Grr..
+                //if (SDL_GetMouseState(null, null) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+                if (g_keys[SDL_SCANCODE_V].keyInput) {
                     setHideAll(true);
                     if (wedget.name == "yes")
                         g_stateConfirm = StateConfirm.yes;

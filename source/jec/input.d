@@ -239,27 +239,45 @@ public:
 			i++;
 		} // foreach
 
-/+
 		i = 0;
-		foreach(key; Keyboard.Key.LBracket .. Keyboard.Key.Dash + 1) {
+		foreach(key; 0 .. 5) {
 			if (! _control && ! _alt) {
-				if (ekeys[i].keyInput) {
+				if (g_keys[SDL_SCANCODE_SPACE + 1 + i].keyInput) {
 					if (_keyShift)
-						return `{}:<>"?|#+~`d[key - Keyboard.Key.LBracket].to!dstring;
+						return "_+{}|"d[i].to!dstring;
 					else
-						return "[];,.'/\\#=`"d[key - Keyboard.Key.LBracket].to!dstring;
+						return "-=[]\\"d[i].to!dstring;
 				}
-			} else {
-				//#key doesn't work with DSFML!
-				enum kProblem {slash = 6, backSlash = 7}
-				if (_control && ekeys[kProb.slash].keyInput)
-					return "-"d;
-				if (_alt && ekeys[kProb.slash].keyInput)
-					return "_"d;
 			}
 			i++;
 		} // foreach
-+/
+
+		if (g_keys[SDL_SCANCODE_SPACE + 7].keyInput) {
+			if (_keyShift)
+				return ":"d[0].to!dstring;
+			else
+				return ";"d[0].to!dstring;
+		}
+
+		i = 0;
+		foreach(key; 0 .. 4) {
+			if (! _control && ! _alt) {
+				if (g_keys[SDL_SCANCODE_SPACE + 9 + i].keyInput) {
+					if (_keyShift)
+						return "~<>?"d[i].to!dstring;
+					else
+						return "`,./"d[i].to!dstring;
+				}
+			}
+			i++;
+		} // foreach
+
+		if (g_keys[SDL_SCANCODE_APOSTROPHE].keyInput) {
+			if (_keyShift)
+				return `"`d[0].to!dstring;
+			else
+				return "'"d[0].to!dstring;
+		}
 
 		if (g_keys[SDL_SCANCODE_SPACE].keyInput)
 			return " "d;
